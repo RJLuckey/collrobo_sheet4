@@ -1,6 +1,11 @@
 import numpy as np 
 import random
 from matplotlib import pyplot as plt
+import concurrent.futures
+from itertools import repeat
+
+
+
 def createSwarm(n):
     xpos = np.random.uniform(0,1,n)
     swarm = []
@@ -10,13 +15,14 @@ def createSwarm(n):
 # def testSwarm():
 #     return [[0.98,1],[0.99,1],[0.01,0], [0.02,0]]
 
-def sim(n, timesteps, r):
+def sim(n, timesteps, r, swarm):
 
     
-    swarm = createSwarm(n)
+    
     swarmRange=range(0,n)
     
     lefties=[]
+    leftChanges=[]
     for i in range(0,timesteps):
 
         leftGoers=0 
@@ -32,12 +38,11 @@ def sim(n, timesteps, r):
         switchers = getSwitchers(neighbourhood, swarm, swarmRange)
         
         
-     
+        switchedLeft = 0
         for j in switchers:
             swarm[j][1] = 1-swarm[j][1]
-       
-        
-        print(leftGoers)
+
+        leftChanges.append(switchedLeft)
 
         for j in swarmRange:
             
@@ -137,18 +142,85 @@ def getNeighbourhood(swarm, swarmRange):
         neighbourhood.append(ncount)
     return  neighbourhood
 
-n = 20
-timesteps=500
-r = 0.045
-x = []
-for i in range(timesteps): 
-    x.append(i)
-plt.xlim(0,timesteps)
-plt.ylim(0,20)
-plt.plot(x,sim(n, timesteps, r))
 
 
-plt.show()
 
 
+
+def task1a():
+    n = 20
+    timesteps=500
+    r = 0.045
+    x = []
+    for i in range(timesteps): 
+        x.append(i)
+    plt.xlim(0,timesteps)
+    plt.ylim(0,20)
+    plt.plot(x,sim(n, timesteps, r, createSwarm(n)))
+    plt.show()
  
+
+
+
+
+def task1b():
+    n = 20
+    timesteps=500
+    r = 0.045
+    a = [0]*20
+    lefties=[]
+    for i in range(0,1000):
+        lefties=sim(n, timesteps, r, createSwarm(n))
+        for i in range(0, len(lefties)-1):
+            change = lefties[i+1]-lefties[i]
+            a[change]+=1
+    for i in range(0,20):
+        a[i]=a[i]
+
+    
+    x = []
+    for i in range(20): 
+        x.append(i)
+    plt.xlim(0,20)
+    #plt.ylim(0,20)
+    plt.scatter(x,a)
+    plt.show()
+
+def task1c():
+    n = 20
+    timesteps=500
+    r = 0.045
+    a = [0]*20
+    m = [0]*20
+    lefties=[]
+    start = time.time()
+    with concurrent.futures.ProcessPoolExecutor() as pool:
+        lefties = pool.map(sim(repeat(n), repeat(timesteps), repeat(r), repeat(createSwarm(n))))
+    end = time.time()
+
+    print("oneD time needed in parallel: ")
+    print(end - start)
+    for i in range(0, len(lefties)-1):
+        change = lefties[i+1]-lefties[i]
+        m[lefties[i]]+=1
+        a[change]+=1
+        a[i]=a[i]
+    m[lefties[len(lefties)-1]]+=1
+
+    for i in range(0,20):
+        m[i]=m[i]/1000
+        a[i]=a[i]/1000
+
+    
+    x = []
+    for i in range(20): 
+        x.append(i)
+    plt.xlim(0,20)
+    #plt.ylim(0,20)
+    plt.scatter(x,a,m)
+    plt.show()
+
+
+
+if __name__ == "__main__":
+    task1a()
