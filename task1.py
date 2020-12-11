@@ -77,7 +77,7 @@ def getSwitchers(neighbourhood, swarm, swarmRange):
 
                 if(swarm[n][1]!=swarm[i][1]):
                     count+=1
-            #half=np.floor(len(neighbourhood[i])/2)
+            
             half=len(neighbourhood[i])/2
             if (count>half):
                 switchers.append(i)
@@ -95,46 +95,44 @@ def getNeighbourhood(swarm, swarmRange):
 
             for j in swarmRange:
                 
-                if(j!=i):
-                    if(abs(swarm[i][0] - swarm[j][0]) < 0.045):
-                    
-                        ncount.append(j)
+                
+                if(abs(swarm[i][0] - swarm[j][0]) < 0.045):
+                
+                    ncount.append(j)
             
         elif(swarm[i][0] <= 0.045):
 
             for j in swarmRange:
-                if(j!=i):
 
-                    xi = swarm[i][0]
+                xi = swarm[i][0]
 
-                    xj = swarm[j][0]
+                xj = swarm[j][0]
 
-                    dist1 = xi - xj
+                dist1 = xi - xj
 
-                    dist2 = 1-xi - xj
+                dist2 = 1-xi - xj
 
-                    if(abs(dist1) < 0.045 or abs(dist2) < 0.045):
+                if(abs(dist1) < 0.045 or abs(dist2) < 0.045):
 
-                        ncount.append(j) 
+                    ncount.append(j) 
 
         elif(swarm[i][0] >= 0.955):
 
             for j in swarmRange:
-                if(j!=i):
-                    xi = swarm[i][0]
-                    xj = swarm[j][0]
+                xi = swarm[i][0]
+                xj = swarm[j][0]
 
-                    dist1 =abs(xi - xj)
+                dist1 =abs(xi - xj)
 
-                    dist2 = abs(xi - 1 - xj)
+                dist2 = abs(xi - 1 - xj)
 
-                    if(dist1 < 0.045): 
-                    
-                        ncount.append(j) 
+                if(dist1 < 0.045): 
+                
+                    ncount.append(j) 
 
-                    elif (dist2< 0.045):
+                elif (dist2< 0.045):
 
-                        ncount.append(j) 
+                    ncount.append(j) 
 
         neighbourhood.append(ncount)
     return  neighbourhood
